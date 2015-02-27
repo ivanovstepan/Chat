@@ -1,21 +1,64 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="css/main.css">
+    <title>Real Chat</title>
+    <link rel="stylesheet" href="css/main.css" >
+    <link rel="stylesheet"  href="bootstrap/bootstrap.min.css">
   </head>
   
   <body>
     <div id="comment_bubble">
-      <h1 class="top">Chat</h1>
+      <button type="button" class=" top-button btn btn-info  ">Info</button>
+      <h1 id="text">Chat</h1>
+      
     </div>
-    <div class ="main">
-      <p>main area</p>
+
+    <div class="main">
+      <div class="col-md-8 scrol" >
+        <p>Textarea</p>
+        <p>Sample text here...</p>
+        <p>Sample text here...</p>
+        <p>Sample text here...</p>
+        <p>Sample text here...</p>
+        <p>Sample text here...</p>
+        <p>Sample text here...</p>
+        <p>Sample text here...</p>
+        <p>Sample text here...</p>
+        <p>Sample text here...</p>
+        <p>Sample text here...</p>
+        <p>Sample text here...</p>
+        <p>Sample text here...</p>
+        <p>Sample text here...</p>
+        <p>Sample text here...</p>
+        <p>Sample text here...</p>
+        <p>Sample text here...</p>
+
+      </div>
+      <div class="col-md-4">
+        <form class="top-form">
+          <img src="..." alt="..." class="img-thumbnail">
+          <img src="..." alt="..." class="img-thumbnail">
+        </form>
+       <form>
+        <div class="form-group">
+         <label for="exampleInputName2">Name</label>
+         <input type="text" class="form-control" id="exampleInputName2" placeholder="Name">
+         </div>
+        <div class="form-group">
+          <label for="exampleInputPassword1">Password</label>
+          <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+        </div>
+        <button type="submit" class="btn">Enter</button>
+          </form>
+      </div>
     </div>
-    <div class="sent">
-    
-  <textarea class="span8" placeholder="Try it:)" cols="30"  ></textarea>
-     <input type="submit"></input>
-    
+      
+    <div class="send">
+  <textarea class="span8" placeholder="Try it:)" cols="30"></textarea>
+  <button type="submit" class="btn">Send</button>
+
+    <button type="button" class="btn btn-danger pull-right">Edit</button>
+    <button type="button" class="btn btn-danger pull-right">Delete</button>
   </div>
 
   </body>
