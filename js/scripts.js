@@ -36,7 +36,6 @@ function delegateName(evtObj){
 	if(evtObj.type === 'click' && evtObj.target.classList.contains('btn-name')){
 		NameAddButtonClick(evtObj);
 	}
-
 }
 
 function delegateEvent(evtObj) {
@@ -118,14 +117,24 @@ function createItem(text){
 //edit Name
  function editName() {
  var user = document.getElementsByClassName("changeName");
- var element=user[0];
+ var element=user[user.length-1];
  document.getElementById("NameText").value= element.innerHTML; 
  deleteUser();
 }
 function deleteUser(){
 	var users = document.getElementsByClassName('changeName');	
-	var element  = users[0];
+	var element  = users[users.length-1];
 element.parentNode.removeChild(element);
 
 
+};
+
+function checkConnect() {
+   var some
+   if(some)
+   	var connected = document.getElementById('connect')
+   connect.setAttribute('action','active');
+   else
+   	var connected = document.getElementById('disconnect')
+   connect.setAttribute('action','active');
 };
