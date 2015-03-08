@@ -1,11 +1,8 @@
 
-.main {
-  position: relative;
-  left: 10%;
-  width: 80%;
-  height: 400px;
-  top: 10px;
+#main {
+  margin-bottom:3px;
 }
+
 .col-md-8{
   border: 2px solid black;
   height: 400px;
@@ -89,5 +86,9 @@
 .btn-default{
   position: relative;
   left: 40%;
+}
+
+.active{
+  background: blue;
 }
 
