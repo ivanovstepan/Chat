@@ -2,93 +2,12 @@
 #main {
   margin-bottom:3px;
 }
-
-.col-md-8{
-  border: 2px solid black;
-  height: 400px;
-  border-radius: 5px;
-}
 .col-md-12{
   border: 2px solid black;
   height: 400px;
   border-radius: 5px;
 }
-.pull-right{
-  left: 10px;
-}
 .scrol{
   overflow: auto;
   height: 400;
 }
-.col-md-4{
-  width: 200;
-  border: 1px solid black;
-  height: 400px;
-  border-radius: 5px;
-}
-.top{
-  position: relative;
-  left: 50%;
-  top: 10px;
-
-}
-
-#comment_bubble {
-    width: 80%;
-    left: 10%;
-    height: 70px;
-    position: relative;
-    border: 1px solid black;
-    border-radius: 5px;
-    background-color: #d7cbe7;
-}
-#text{
-  position: relative;
-  left: 40%;
-  margin-top:10px;
-  }
-.top-form{
-  position: relative;
-  height: 40%;
-
-}
-.span8{
-
-   height: 50px;
-  border-radius: 5px;
-  vertical-align: right;
-  margin-top: 10px;
-}
-.top-button{
-  float: right;
-}
-
-
-
-
-
-
-
-
-
-.fonm-inline{
-  position: relative;
-  left: 20px;
-}
-.send{
-  position: relative;
-  width: 80%;
-  height: 50px;
-  left: 10%;
-  top: 20px;
-}
-
-.btn-default{
-  position: relative;
-  left: 40%;
-}
-
-.active{
-  background: blue;
-}
-
