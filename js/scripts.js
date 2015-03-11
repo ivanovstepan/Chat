@@ -59,7 +59,7 @@ function NameAddButtonClick(){
 
 function onAddButtonClick(){
 	var MessageText = document.getElementById('MessageText');
-	addTodo(MessageText.value);
+	addMessage(MessageText.value);
 	MessageText.value = '';
 } 
 
@@ -73,11 +73,11 @@ function onToggleItem(labelEl) {
 	}
 }
 
-function addTodo(value) {
+function addMessage(value) {
 	if(!value){
 		return;
 	}
-	var item = createItem(value);
+	var item = createMessage(value);
 	var items = document.getElementsByClassName('SeeMessages')[0];
 	items.appendChild(item);
 }
@@ -89,6 +89,7 @@ function addName(value){
 	var divItem =document.createElement('div');
 	divItem.classList.add('form-group');
 	divItem.classList.add('user');
+	divItem.setAttribute('id','user');
 	divItem.appendChild(item);
 	var items = document.getElementsByClassName('user')[0];
 	items.appendChild(divItem);
@@ -106,11 +107,12 @@ function createName(text){
 
 
 }
-function createItem(text){
+function createMessage(text){
 	var divItem = document.createElement('div');
 	divItem.classList.add('SeeOneMessage');
 	divItem.id="userid";
-	divItem.appendChild(document.createTextNode(text));
+	var nameOfTheUser = document.getElementsByClassName('changeName');
+	divItem.appendChild(document.createTextNode(nameOfTheUser.toString()+" : "+text));
 	return divItem;
 }
 
@@ -131,10 +133,12 @@ element.parentNode.removeChild(element);
 
 function checkConnect() {
    var some
-   if(some)
+   if(some){
    	var connected = document.getElementById('connect')
    connect.setAttribute('action','active');
-   else
+}
+   else{
    	var connected = document.getElementById('disconnect')
    connect.setAttribute('action','active');
+}
 };
