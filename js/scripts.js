@@ -7,7 +7,19 @@ function run(){
 	messageText.addEventListener('keydown', function(e){
 		if(e.keyCode == 13)
 			onAddButtonClick(e);
-	})
+	}
+	)
+	messageText.addEventListener('keydown', function(e){
+		if(e.keyCode == 38)
+			editLastMessage(e);
+	}
+	)
+	messageText.addEventListener('keydown', function(e){
+		if(e.keyCode == 40)
+			deleteLastMessage(e);
+	}
+	)
+
 	
 	
 }
@@ -16,16 +28,14 @@ function deleteLastMessage(){
 	var messages = document.getElementsByClassName('SeeOneMessage');	
 	if(!messages.length)return;
 	var element  = messages[messages.length-1];
-	
-element.parentNode.removeChild(element);
+    element.parentNode.removeChild(element);
 
 
 };
 function editLastMessage(){
-	var messages = document.getElementsByClassName('SeeOneMessage');
+	var messages = document.getElementsByClassName('onlyMessage');
 	if(!messages.length)return;
 	var element  = messages[messages.length-1];
-	
 	document.getElementById("MessageText").value= element.innerHTML;
 deleteLastMessage();
 
@@ -43,16 +53,14 @@ function delegateEvent(evtObj) {
 		onAddButtonClick(evtObj);
 	}
 
-	if(evtObj.type === 'change' && evtObj.target.nodeName == 'INPUT'){
-		var labelEl = evtObj.target.parentElement;
-		onToggleItem(labelEl);
-	}
+	
 }
 
 function NameAddButtonClick(){
 	var MessageText = document.getElementById('NameText');
 	addName(MessageText.value);
 	MessageText.value = '';
+	 document.getElementById("NameText").setAttribute('disabled',false);
 
 }
 
@@ -64,21 +72,14 @@ function onAddButtonClick(){
 } 
 
 
-function onToggleItem(labelEl) {
-	if(labelEl.classList.contains('SeeOneMessage')) {
-		labelEl.classList.remove('SeeOneMessage');
-	}
-	else {
-		labelEl.classList.add('SeeOneMessage');
-	}
-}
+
 
 function addMessage(value) {
 	if(!value){
 		return;
 	}
 	var item = createMessage(value);
-	var items = document.getElementsByClassName('SeeMessages')[0];
+	var items = document.getElementsByClassName('MessagesPlace')[0];
 	items.appendChild(item);
 }
 function addName(value){
@@ -93,6 +94,7 @@ function addName(value){
 	divItem.appendChild(item);
 	var items = document.getElementsByClassName('user')[0];
 	items.appendChild(divItem);
+
 }
 
 function createName(text){
@@ -111,16 +113,24 @@ function createMessage(text){
 	var divItem = document.createElement('div');
 	divItem.classList.add('SeeOneMessage');
 	divItem.id="userid";
-	var nameOfTheUser = document.getElementsByClassName('changeName');
-	divItem.appendChild(document.createTextNode(nameOfTheUser.toString()+" : "+text));
+	var spanItem_1 = document.createElement('span');
+	var nameOfTheUser = document.getElementsByClassName('changeName')[0];
+	spanItem_1.appendChild(document.createTextNode(nameOfTheUser.innerHTML+" : "));
+	divItem.appendChild(spanItem_1);
+	var spanItem_2 = document.createElement('span');
+	spanItem_2.classList.add("onlyMessage");
+	spanItem_2.appendChild(document.createTextNode(text));
+	divItem.appendChild(spanItem_2);
 	return divItem;
 }
 
 //edit Name
  function editName() {
+	document.getElementById("NameText").disabled= false;
  var user = document.getElementsByClassName("changeName");
  var element=user[user.length-1];
  document.getElementById("NameText").value= element.innerHTML; 
+
  deleteUser();
 }
 function deleteUser(){
