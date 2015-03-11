@@ -12,12 +12,9 @@
       <nav class="navbar navbar-default">
         <div class="container-fluid">
           <div class="navbar-header">
-            
             <a class="navbar-brand">Chat</a>
           </div>
-
-          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
-              
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2"> 
             <ul class="nav navbar-nav navbar-right">
               <li><a href="#" class="btn " id="connect">Connect</a></li>
               <li><a href="#" class="btn " id="disconnect">Dicconect</a></li>
@@ -27,14 +24,11 @@
       </nav>
       <div class="jumbotron " id="main" >
         <div class="container">
-          <div class="col-lg-8 " >
-            <div class="col-md-12 scrol SeeMessages" >
-
-
+          <div class="col-lg-8  " >
+            <div class="col-md-12 scrol MessagesPlace " >
             </div>
           </div>
-
-          <div  class="col-lg-4 users">   
+          <div  class="col-lg-4 ">   
            <div class="col-lg-12">
              <form action="#">
               <div class="form-group">
@@ -48,13 +42,8 @@
               <div class="form-vertical users " align="left" action="#" >
                 <div class="form-group  user">
                   <label class="btn btn-danger">Users : </label>
-                  <div>
-                    <button class="btn btn-info" style="margin-top:10px;">user_1 </button>
-                  </div>
-
                 </div>
-               
-                </div>
+              </div>
               </div>
             </div>
           </div>
@@ -62,24 +51,16 @@
         <div class="SendMessage" >
         <div class="container">
           <div class="col-lg-8" align="center">
-            <input type="text" class="form-control" placeholder="Try it:)"  id="MessageText" style="margin-top:10px;" >
+            <input type="text" class="form-control" placeholder="to Delete Down/to Edit Up"  id="MessageText" style="margin-top:10px;" >
           </div>
          </div>
         <div class="container" style="margin-top:5px;">
           <div class="col-lg-1">
             <button type="submit" class="btn btn-add">Send</button>
           </div>
-          <div class="col-lg-8"></div>
-          <div class="col-lg-1">
-            <button class="btn btn-danger" onclick="editLastMessage()">Edit</button>
-          </div>
-          <div class="col-lg-2">
-            <button class="btn btn-danger"  id="deleteMessage" onclick="deleteLastMessage();">Delete</button>
-          </div>
+        
          </div>
        </div>
-
-
       </div>
     </div>
   </body>
