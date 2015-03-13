@@ -1,3 +1,4 @@
+var name;
 function run(){
 	var appContainer = document.getElementsByClassName('reader')[0];
 	appContainer.addEventListener('click', delegateEvent);
@@ -19,69 +20,57 @@ function run(){
 			deleteLastMessage(e);
 	}
 	)
-
+	var messageList = restore();
+	createAllMessages(messageList)
 	
 	
 }
+function createAllMessages(messageList) {
+	
+	for(var i = 0; i < messageList.length; i++)
+		addMessage(messageList[i]);
+	 	addLastName(messageList[messageList.length-1]);
+	
+}
+function addLastName(message){
+	var MessageText = message.user;
+	name=message.user;
+	addName(name);
+	document.getElementById("NameText").setAttribute('disabled',false);
 
+}
+
+//delete message
 function deleteLastMessage(){
 	var messages = document.getElementsByClassName('SeeOneMessage');	
 	if(!messages.length)return;
 	var element  = messages[messages.length-1];
     element.parentNode.removeChild(element);
-
-
-};
+}
+//edit message
 function editLastMessage(){
 	var messages = document.getElementsByClassName('onlyMessage');
 	if(!messages.length)return;
 	var element  = messages[messages.length-1];
 	document.getElementById("MessageText").value= element.innerHTML;
-deleteLastMessage();
+	deleteLastMessage();
+}
 
-};
-
-
+//evrything connected with name
 function delegateName(evtObj){
 	if(evtObj.type === 'click' && evtObj.target.classList.contains('btn-name')){
 		NameAddButtonClick(evtObj);
 	}
 }
-
-function delegateEvent(evtObj) {
-	if(evtObj.type === 'click' && evtObj.target.classList.contains('btn-add')){
-		onAddButtonClick(evtObj);
-	}
-
-	
-}
-
 function NameAddButtonClick(){
 	var MessageText = document.getElementById('NameText');
+	name=MessageText.value;
 	addName(MessageText.value);
 	MessageText.value = '';
-	 document.getElementById("NameText").setAttribute('disabled',false);
+	document.getElementById("NameText").setAttribute('disabled',false);
 
 }
 
-
-function onAddButtonClick(){
-	var MessageText = document.getElementById('MessageText');
-	addMessage(MessageText.value);
-	MessageText.value = '';
-} 
-
-
-
-
-function addMessage(value) {
-	if(!value){
-		return;
-	}
-	var item = createMessage(value);
-	var items = document.getElementsByClassName('MessagesPlace')[0];
-	items.appendChild(item);
-}
 function addName(value){
 	if(!value){
 		return;
@@ -94,7 +83,6 @@ function addName(value){
 	divItem.appendChild(item);
 	var items = document.getElementsByClassName('user')[0];
 	items.appendChild(divItem);
-
 }
 
 function createName(text){
@@ -106,25 +94,8 @@ function createName(text){
 	buttonItem.setAttribute('onclick','editName()');
 	buttonItem.appendChild(document.createTextNode(text));
 	return buttonItem;
-
-
-}
-function createMessage(text){
-	var divItem = document.createElement('div');
-	divItem.classList.add('SeeOneMessage');
-	divItem.id="userid";
-	var spanItem_1 = document.createElement('span');
-	var nameOfTheUser = document.getElementsByClassName('changeName')[0];
-	spanItem_1.appendChild(document.createTextNode(nameOfTheUser.innerHTML+" : "));
-	divItem.appendChild(spanItem_1);
-	var spanItem_2 = document.createElement('span');
-	spanItem_2.classList.add("onlyMessage");
-	spanItem_2.appendChild(document.createTextNode(text));
-	divItem.appendChild(spanItem_2);
-	return divItem;
 }
 
-//edit Name
  function editName() {
 	document.getElementById("NameText").disabled= false;
  var user = document.getElementsByClassName("changeName");
@@ -137,9 +108,50 @@ function deleteUser(){
 	var users = document.getElementsByClassName('changeName');	
 	var element  = users[users.length-1];
 element.parentNode.removeChild(element);
+} 
 
 
-};
+
+//message
+function delegateEvent(evtObj) {
+	if(evtObj.type === 'click' && evtObj.target.classList.contains('btn-add')){
+		onAddButtonClick(evtObj);
+	}	
+}
+
+function onAddButtonClick(){
+	var MessageText = document.getElementById('MessageText');
+	var newMessage = theMessage(MessageText.value,name);
+	if(MessageText.value == '')
+		return;
+
+	addMessage(newMessage);
+	MessageText.value = '';
+	store(messageList);
+} 
+
+function addMessage(message) {
+	if(!message){
+		return;
+	}
+	var item = createMessage(message);
+	var items = document.getElementsByClassName('MessagesPlace')[0];
+	messageList.push(message);
+	items.appendChild(item);
+}
+function createMessage(text){
+	var divItem = document.createElement('div');
+	var htmlAsText = '<div class="SeeOneMessage" message-id="идентификатор"><span> name : </span><span class="onlyMessage">text</span></div>';
+	divItem.innerHTML= htmlAsText;
+	updateItem(divItem.firstChild, text);
+	return divItem.firstChild;
+}
+
+function updateItem(divItem, task){
+	divItem.setAttribute('data-task-id', task.id);
+	divItem.lastChild.textContent = task.description;
+	divItem.firstChild.innerHTML=task.user +' : ' ;
+} 
 
 function checkConnect() {
    var some
@@ -151,4 +163,37 @@ function checkConnect() {
    	var connected = document.getElementById('disconnect')
    connect.setAttribute('action','active');
 }
+}
+
+var theMessage = function(text, userName) {
+	return {
+		description:text,
+		user: userName,
+		id: uniqueId()
+	};
 };
+var uniqueId = function() {
+	var date = Date.now();
+	var random = Math.random() * Math.random();
+	return Math.floor(date * random).toString();
+};
+var messageList = [];
+
+function store(listToSave) {
+	if(typeof(Storage) == "undefined") {
+		alert('localStorage is not accessible');
+		return;
+	}
+
+	localStorage.setItem("Chat messageList", JSON.stringify(listToSave));
+}
+function restore() {
+	if(typeof(Storage) == "undefined") {
+		alert('localStorage is not accessible');
+		return;
+	}
+
+	var item = localStorage.getItem("Chat messageList");
+
+	return item && JSON.parse(item);
+}
