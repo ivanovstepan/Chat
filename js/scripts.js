@@ -47,25 +47,27 @@ function deleteLastMessage(){
 	if(!messages.length)return;
 	var element  = messages[messages.length-1];
 	element.parentNode.removeChild(element);
-	for(var i=messageList.length-1;i>0;i--){
+	for(var i=messageList.length-1;i>=0;i--){
 		if(messageList[i].id!=element.attributes['data'].value)
 			continue;
 		messageList[i].deleteMessage=true;
 		store(messageList);
-
 	}
     
-    
-    	
-	
 
 }
 //edit message
 function editLastMessage(){
-	var messages = document.getElementsByClassName('onlyMessage');
+	var messages = document.getElementsByClassName('SeeOneMessage');
 	if(!messages.length)return;
 	var element  = messages[messages.length-1];
-	document.getElementById("MessageText").value= element.innerHTML;
+	for(var i=messageList.length-1;i>=0;i--){
+		if(messageList[i].id!=element.attributes['data'].value)
+			continue;
+		messageList[i].deleteMessage=true;
+		store(messageList);
+	}
+	document.getElementById("MessageText").value= element.lastChild.innerHTML;
 	deleteLastMessage();
 }
 
