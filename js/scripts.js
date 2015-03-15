@@ -28,6 +28,7 @@ function run(){
 function createAllMessages(messageList) {
 	
 	for(var i = 0; i < messageList.length; i++)
+		if(messageList[i].deleteMessage==false)
 		addMessage(messageList[i]);
 	 	addLastName(messageList[messageList.length-1]);
 	
@@ -45,7 +46,19 @@ function deleteLastMessage(){
 	var messages = document.getElementsByClassName('SeeOneMessage');	
 	if(!messages.length)return;
 	var element  = messages[messages.length-1];
-    element.parentNode.removeChild(element);
+	element.parentNode.removeChild(element);
+	for(var i=messageList.length-1;i>0;i--){
+		if(messageList[i].id!=element.attributes['data'].value)
+			continue;
+		messageList[i].deleteMessage=true;
+		store(messageList);
+
+	}
+    
+    
+    	
+	
+
 }
 //edit message
 function editLastMessage(){
@@ -141,16 +154,17 @@ function addMessage(message) {
 }
 function createMessage(text){
 	var divItem = document.createElement('div');
-	var htmlAsText = '<div class="SeeOneMessage" message-id="идентификатор"><span> name : </span><span class="onlyMessage">text</span></div>';
+	var htmlAsText = '<div class="SeeOneMessage" ><span> name : </span><span class="onlyMessage">text</span></div>';
 	divItem.innerHTML= htmlAsText;
 	updateItem(divItem.firstChild, text);
 	return divItem.firstChild;
 }
 
 function updateItem(divItem, task){
-	divItem.setAttribute('data-task-id', task.id);
+	divItem.setAttribute('data', task.id);
 	divItem.lastChild.textContent = task.description;
 	divItem.firstChild.innerHTML=task.user +' : ' ;
+
 } 
 
 function checkConnect() {
@@ -165,11 +179,12 @@ function checkConnect() {
 }
 }
 
-var theMessage = function(text, userName) {
+var theMessage = function(text, userName,deleteMessage) {
 	return {
 		description:text,
 		user: userName,
-		id: uniqueId()
+		id: uniqueId(),
+		deleteMessage:!!deleteMessage,
 	};
 };
 var uniqueId = function() {
