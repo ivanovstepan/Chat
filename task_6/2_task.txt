@@ -1,0 +1,12 @@
+GET http://localhost:999/chat?token=TN35EN HTTP/1.1
+Host: localhost:999
+User-Agent: Composer
+Content-Length: 2
+
+
+
+HTTP/1.1 200 OK
+Date: Mon, 23 Mar 2015 21:17:46 GMT
+Content-length: 52
+
+{"messages":["everything is good"],"token":"TN19EN"}
