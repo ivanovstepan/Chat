@@ -20,8 +20,9 @@ function run(){
 			deleteLastMessage(e);
 	}
 	)
-	var messageList = restore();
-	createAllMessages(messageList)
+	/*var messageList = restore();
+	createAllMessages(messageList)*/
+	mainLoop();
 	
 	
 }
@@ -30,11 +31,10 @@ function createAllMessages(messageList) {
 	for(var i = 0; i < messageList.length; i++)
 		if(messageList[i].deleteMessage==false)
 		addMessage(messageList[i]);
-	 	addLastName(messageList[messageList.length-1]);
+	 	//addLastName(messageList[messageList.length-1]);
 	
 }
 function addLastName(message){
-	var MessageText = message.user;
 	name=message.user;
 	addName(name);
 	document.getElementById("NameText").setAttribute('disabled',false);
@@ -140,9 +140,12 @@ function onAddButtonClick(){
 	if(MessageText.value == '')
 		return;
 
-	addMessage(newMessage);
+	//addMessage(newMessage);
 	MessageText.value = '';
-	store(messageList);
+	//store(messageList);
+	sendMessage(newMessage, function() {
+		console.log('Message sent ' + newMessage.text);
+	});
 } 
 
 function addMessage(message) {
@@ -164,7 +167,7 @@ function createMessage(text){
 
 function updateItem(divItem, task){
 	divItem.setAttribute('data', task.id);
-	divItem.lastChild.textContent = task.description;
+	divItem.lastChild.textContent = task.text;
 	divItem.firstChild.innerHTML=task.user +' : ' ;
 
 } 
@@ -183,7 +186,7 @@ function checkConnect() {
 
 var theMessage = function(text, userName,deleteMessage) {
 	return {
-		description:text,
+		text:text,
 		user: userName,
 		id: uniqueId(),
 		deleteMessage:!!deleteMessage,
@@ -196,7 +199,7 @@ var uniqueId = function() {
 };
 var messageList = [];
 
-function store(listToSave) {
+/*function store(listToSave) {
 	if(typeof(Storage) == "undefined") {
 		alert('localStorage is not accessible');
 		return;
@@ -213,4 +216,115 @@ function restore() {
 	var item = localStorage.getItem("Chat messageList");
 
 	return item && JSON.parse(item);
+}
+*/
+//server
+var appState = {
+	mainUrl : 'http://localhost:999/chat',
+	history:[],
+	token : 'TN11EN'
+};
+function mainLoop() {
+	function loop() {
+		var url = appState.mainUrl + '?token=' + appState.token;
+
+		get(url, function(responseText) {
+			var response = JSON.parse(responseText);
+
+			appState.token = response.token;
+			updateHistory(response.messages);
+			setTimeout(loop, 1000);
+		}, function(error) {
+			defaultErrorHandler(error);
+			setTimeout(loop, 1000);
+		});
+	}
+
+	loop();
+}
+function updateHistory(newMessages) {
+	for(var i = 0; i < newMessages.length; i++)
+		addMessage(newMessages[i]);
+	//addLastName(newMessages[newMessages.length-1]);
+}
+function addMessageInternal(message) {
+	var historyBox = document.getElementById('MessagesPlace');
+	var history = appState.history;
+
+	history.push(message);
+	createMessage(message);
+	//istoryBox.innerHTML = message.user + ' имел сказать:\n' + message.text + '\n\n' + historyBox.innerHTML;
+}
+
+
+
+function get(url, continueWith, continueWithError) {
+	ajax('GET', url, null, continueWith, continueWithError);
+}
+
+function post(url, data, continueWith, continueWithError) {
+	ajax('POST', url, data, continueWith, continueWithError);	
+}
+
+
+function isError(text) {
+	if(text == "")
+		return false;
+	
+	try {
+		var obj = JSON.parse(text);
+	} catch(ex) {
+		return true;
+	}
+
+	return !!obj.error;
+}
+
+function ajax(method, url, data, continueWith, continueWithError) {
+	var xhr = new XMLHttpRequest();
+
+	continueWithError = continueWithError || defaultErrorHandler;
+	xhr.open(method || 'GET', url, true);
+
+	xhr.onload = function () {
+		if (xhr.readyState !== 4)
+			return;
+
+		if(xhr.status != 200) {
+			continueWithError('Error on the server side, response ' + xhr.status);
+			return;
+		}
+
+		if(isError(xhr.responseText)) {
+			continueWithError('Error on the server side, response ' + xhr.responseText);
+			return;
+		}
+
+		continueWith(xhr.responseText);
+	};    
+
+	xhr.ontimeout = function () {
+		ontinueWithError('Server timed out !');
+	}
+
+	xhr.onerror = function (e) {
+		var errMsg = 'Server connection error ' + appState.mainUrl + '\n'+
+		'\n' +
+		'Check if \n'+
+		'- server is active\n'+
+		'- server sends header "Access-Control-Allow-Origin:*"';
+
+		continueWithError(errMsg);
+	};
+
+	xhr.send(data);
+}
+function sendMessage(message, continueWith) {
+	post(appState.mainUrl, JSON.stringify(message), function(){
+		continueWith && continueWith();
+	});
+}
+
+function defaultErrorHandler(message) {
+	console.error(message);
 }
