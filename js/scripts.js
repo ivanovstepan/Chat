@@ -21,11 +21,7 @@
 		}
 		)
 		getAllMessages();
-		updateMessages();
-		/*var messageList = restore();
-		createAllMessages(messageList)*/
-		//mainLoop();
-		
+		updateMessages();	
 		
 	}
 	function createAllMessages(messageList) {
@@ -137,11 +133,11 @@
 
 	function onAddButtonClick(){
 		var MessageText = document.getElementById('MessageText');
-		var newMessage = theMessage(MessageText.value,name);
+		var newMessage = theMessage(MessageText.value,name,messageList.length);
 		if(MessageText.value == '')
 			return;
 		MessageText.value = '';
-		sendMessage(newMessage, function() {
+		storeMessages(newMessage, function() {
 			console.log('Message sent ' + newMessage.text);
 		});
 	} 
@@ -182,12 +178,11 @@
 	}
 	}
 
-	var theMessage = function(text, userName,deleteMessage) {
+	var theMessage = function(text, userName,id) {
 		return {
 			message:text,
 			user: userName,
-			id: uniqueId(),
-			deleteMessage:!!deleteMessage,
+			id: id+1,
 		};
 	};
 	var uniqueId = function() {
@@ -263,13 +258,23 @@ function updateMessages(continueWith) {
 
 
 
-	function get(url, continueWith, continueWithError) {
-		ajax('GET', url, null, continueWith, continueWithError);
-	}
-
-	function post(url, data, continueWith, continueWithError) {
-		ajax('POST', url, data, continueWith, continueWithError);	
-	}
+function get(url, continueWith, continueWithError) {
+    ajax('GET', url, null, continueWith, continueWithError);
+}
+function post(url, data, continueWith, continueWithError) {
+    ajax('POST', url, data, continueWith, continueWithError);
+}
+function put(url, data, continueWith, continueWithError) {
+    ajax('PUT', url, data, continueWith, continueWithError);
+}
+function del(url, continueWith, continueWithError) {
+    ajax('DELETE', url, null, continueWith, continueWithError);
+}
+function storeMessages(sendMessage, continueWith) {
+    post(appState.mainUrl, JSON.stringify(sendMessage), function () {
+        updateMessages();
+    });
+}
 
 
 	function isError(text) {
@@ -326,7 +331,7 @@ function updateMessages(continueWith) {
 	}
 	function sendMessage(message, continueWith) {
 		post(appState.mainUrl, JSON.stringify(message), function(){
-			continueWith && continueWith();
+			updateMessages();
 		});
 	}
 
