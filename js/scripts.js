@@ -21,6 +21,7 @@
 		}
 		)
 		getAllMessages();
+		updateMessages();
 		/*var messageList = restore();
 		createAllMessages(messageList)*/
 		//mainLoop();
@@ -139,10 +140,7 @@
 		var newMessage = theMessage(MessageText.value,name);
 		if(MessageText.value == '')
 			return;
-
-		//addMessage(newMessage);
 		MessageText.value = '';
-		//store(messageList);
 		sendMessage(newMessage, function() {
 			console.log('Message sent ' + newMessage.text);
 		});
@@ -199,25 +197,6 @@
 	};
 	var messageList = [];
 
-	/*function store(listToSave) {
-		if(typeof(Storage) == "undefined") {
-			alert('localStorage is not accessible');
-			return;
-		}
-
-		localStorage.setItem("Chat messageList", JSON.stringify(listToSave));
-	}
-	function restore() {
-		if(typeof(Storage) == "undefined") {
-			alert('localStorage is not accessible');
-			return;
-		}
-
-		var item = localStorage.getItem("Chat messageList");
-
-		return item && JSON.parse(item);
-	}
-	*/
 	//server
 	var appState = {
 		mainUrl : 'http://localhost:999/chat',
@@ -236,7 +215,7 @@
     });
 		
 	}
-	function mainLoop() {
+	/*function mainLoop() {
 		function loop() {
 			var url = appState.mainUrl + '?token=' + appState.token;
 
@@ -266,7 +245,21 @@
 		history.push(message);
 		createMessage(message);
 		//istoryBox.innerHTML = message.user + ' имел сказать:\n' + message.text + '\n\n' + historyBox.innerHTML;
-	}
+	}*/
+function updateMessages(continueWith) {
+    var url = appState.mainUrl + '?token=' + appState.token;
+        get(url, function (responseText) {
+        var response = JSON.parse(responseText).messages;
+        for (var i = 0; i < response.length; i++) {
+         var message = response[i];
+    if (messageList[message.id] == null) 
+         addMessage(message);
+          }
+        continueWith && continueWith();
+    });
+    setTimeout(updateMessages, 1000);
+
+}
 
 
 
