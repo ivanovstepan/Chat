@@ -25,9 +25,9 @@
 		
 	}
 	function createAllMessages(messageList) {
-		
 		for(var i = 0; i < messageList.length; i++)
-			//if(messageList[i].deleteMessage==false)
+			if(messageList[i].requst == "DELETE"){}
+			else
 			addMessage(messageList[i]);
 		
 	}
@@ -35,25 +35,30 @@
 		name=message.user;
 		addName(name);
 		document.getElementById("NameText").setAttribute('disabled',false);
-
 	}
 
-	//delete message
 	function deleteLastMessage(){
 		var messages = document.getElementsByClassName('SeeOneMessage');	
 		if(!messages.length)return;
 		var element  = messages[messages.length-1];
+		deleteMessageFromServer(messages.length-1,function () {});
 		element.parentNode.removeChild(element);
 		for(var i=messageList.length-1;i>=0;i--){
 			if(messageList[i].id!=element.attributes['data'].value)
 				continue;
 			messageList[i].deleteMessage=true;
-			store(messageList);
 		}
-	    
+		
 
 	}
-	//edit message
+	function deleteMessageFromServer(index,continueWith) {
+		 var indexToken = index*8+11; 
+		 var url = appState.mainUrl + '?token=' + "TN" +indexToken.toString() + "EN";
+		    del(url, function () {
+		     continueWith && continueWith();
+		    });
+}
+
 	function editLastMessage(){
 		var messages = document.getElementsByClassName('SeeOneMessage');
 		if(!messages.length)return;
@@ -62,13 +67,11 @@
 			if(messageList[i].id!=element.attributes['data'].value)
 				continue;
 			messageList[i].deleteMessage=true;
-			store(messageList);
 		}
 		document.getElementById("MessageText").value= element.lastChild.innerHTML;
 		deleteLastMessage();
 	}
 
-	//evrything connected with name
 	function delegateName(evtObj){
 		if(evtObj.type === 'click' && evtObj.target.classList.contains('btn-name')){
 			NameAddButtonClick(evtObj);
@@ -84,9 +87,7 @@
 	}
 
 	function addName(value){
-		if(!value){
-			return;
-		}
+		if(!value){ return; }
 		var item = createName(value);
 		var divItem =document.createElement('div');
 		divItem.classList.add('form-group');
@@ -109,22 +110,19 @@
 	}
 
 	 function editName() {
-		document.getElementById("NameText").disabled= false;
-	 var user = document.getElementsByClassName("changeName");
-	 var element=user[user.length-1];
-	 document.getElementById("NameText").value= element.innerHTML; 
-
-	 deleteUser();
+		 document.getElementById("NameText").disabled= false;
+		 var user = document.getElementsByClassName("changeName");
+		 var element=user[user.length-1];
+		 document.getElementById("NameText").value= element.innerHTML; 
+		 deleteUser();
 	}
+
 	function deleteUser(){
 		var users = document.getElementsByClassName('changeName');	
 		var element  = users[users.length-1];
-	element.parentNode.removeChild(element);
-	} 
+		element.parentNode.removeChild(element);
+	}
 
-
-
-	//message
 	function delegateEvent(evtObj) {
 		if(evtObj.type === 'click' && evtObj.target.classList.contains('btn-add')){
 			onAddButtonClick(evtObj);
@@ -163,7 +161,6 @@
 		divItem.setAttribute('data', task.id);
 		divItem.lastChild.textContent = task.message;
 		divItem.firstChild.innerHTML=task.user +' : ' ;
-
 	} 
 
 	function checkConnect() {
@@ -173,7 +170,7 @@
 	   connect.setAttribute('action','active');
 	}
 	   else{
-	   	var connected = document.getElementById('disconnect')
+	   	var connected = document.getElementById('connect')
 	   connect.setAttribute('action','active');
 	}
 	}
@@ -192,7 +189,6 @@
 	};
 	var messageList = [];
 
-	//server
 	var appState = {
 		mainUrl : 'http://localhost:999/chat',
 		history:[],
@@ -210,51 +206,27 @@
     });
 		
 	}
-	/*function mainLoop() {
-		function loop() {
-			var url = appState.mainUrl + '?token=' + appState.token;
 
-			get(url, function(responseText) {
-				var response = JSON.parse(responseText);
-
-				appState.token = response.token;
-				updateHistory(response.messages);
-				setTimeout(loop, 1000);
-			}, function(error) {
-				defaultErrorHandler(error);
-				setTimeout(loop, 1000);
-			});
-		}
-
-		loop();
-	}
-	function updateHistory(newMessages) {
-		for(var i = 0; i < newMessages.length; i++)
-			addMessage(newMessages[i]);
-		//addLastName(newMessages[newMessages.length-1]);
-	}
-	function addMessageInternal(message) {
-		var historyBox = document.getElementById('MessagesPlace');
-		var history = appState.history;
-
-		history.push(message);
-		createMessage(message);
-		//istoryBox.innerHTML = message.user + ' имел сказать:\n' + message.text + '\n\n' + historyBox.innerHTML;
-	}*/
 function updateMessages(continueWith) {
     var url = appState.mainUrl + '?token=' + appState.token;
         get(url, function (responseText) {
         var response = JSON.parse(responseText).messages;
         for (var i = 0; i < response.length; i++) {
          var message = response[i];
-    if (messageList[message.id] == null) 
-         addMessage(message);
-          }
+         if (message.requst == "DELETE") {
+      
+             }
+
+	      else if (messageList[message.id] == null) {
+	             addMessage(message);
+	         }
+                   }
         continueWith && continueWith();
     });
     setTimeout(updateMessages, 1000);
 
 }
+
 
 
 
@@ -275,7 +247,6 @@ function storeMessages(sendMessage, continueWith) {
         updateMessages();
     });
 }
-
 
 	function isError(text) {
 		if(text == "")
