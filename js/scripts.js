@@ -1,4 +1,24 @@
 	var name;
+	var change =0;
+		var theMessage = function(text, userName,id) {
+		return {
+			message:text,
+			user: userName,
+			id: id,
+		};
+	};
+	var uniqueId = function() {
+		var date = Date.now();
+		var random = Math.random() * Math.random();
+		return Math.floor(date * random).toString();
+	};
+	var messageList = [];
+
+	var appState = {
+		mainUrl : 'http://localhost:999/chat',
+		history:[],
+		token : 'TN11EN'
+	};
 	function run(){
 		var appContainer = document.getElementsByClassName('reader')[0];
 		appContainer.addEventListener('click', delegateEvent);
@@ -21,21 +41,33 @@
 		}
 		)
 		getAllMessages();
-		updateMessages();	
+		//обновляется все сообщения
+		updateMessages();		
+	}
+
+		function getAllMessages (continueWith) {
+		var url = appState.mainUrl + '?token=' + appState.token;
+		get(url, function(responseText) {
+		var response = JSON.parse(responseText);
+
+        createAllMessages(response.messages);
+
+        continueWith && continueWith();
+    });
 		
 	}
+
 	function createAllMessages(messageList) {
 		for(var i = 0; i < messageList.length; i++)
-			if(messageList[i].requst == "DELETE"){}
-			else
 			addMessage(messageList[i]);
 		
 	}
-	function addLastName(message){
+	/*function addLastName(message){
 		name=message.user;
 		addName(name);
 		document.getElementById("NameText").setAttribute('disabled',false);
-	}
+	}*/
+
 
 	function deleteLastMessage(){
 		var messages = document.getElementsByClassName('SeeOneMessage');	
@@ -51,6 +83,7 @@
 		
 
 	}
+
 	function deleteMessageFromServer(index,continueWith) {
 		 var indexToken = index*8+11; 
 		 var url = appState.mainUrl + '?token=' + "TN" +indexToken.toString() + "EN";
@@ -60,16 +93,31 @@
 }
 
 	function editLastMessage(){
+		/*
+var sendText = document.getElementById('sendText');
+
+        if (sendText.value != "") {
+            var name = document.getElementById('name');
+            var surname = document.getElementById('surname');
+
+            var index = document.getElementById("allMessages").selectedIndex;
+            var select = document.getElementById("allMessages")[index];
+            
+            var changeMessage = messageOption(sendText.value + "  " + changeIconUtfCode, surname.value + " " + name.value, index);
+            changeMessages(changeMessage, function () {
+            
+            });
+           
+            select.selected = false;
+            sendText.value = null;
+            document.getElementById("allMessages").scrollTop = document.getElementById("allMessages").scrollHeight;
+		*/
+		change=1;
 		var messages = document.getElementsByClassName('SeeOneMessage');
 		if(!messages.length)return;
-		var element  = messages[messages.length-1];
-		for(var i=messageList.length-1;i>=0;i--){
-			if(messageList[i].id!=element.attributes['data'].value)
-				continue;
-			messageList[i].deleteMessage=true;
-		}
+		var element  =  messages[messages.length-1];
 		document.getElementById("MessageText").value= element.lastChild.innerHTML;
-		deleteLastMessage();
+
 	}
 
 	function delegateName(evtObj){
@@ -131,16 +179,35 @@
 
 	function onAddButtonClick(){
 		var MessageText = document.getElementById('MessageText');
-		var newMessage = theMessage(MessageText.value,name,messageList.length);
+		var newMessage = theMessage(MessageText.value,name,messageList.length-1);
 		if(MessageText.value == '')
 			return;
 		MessageText.value = '';
+		if(change==1){
+			change=0;
+			changeMessages(newMessage, function () {  });
+		}
+		else
 		storeMessages(newMessage, function() {
 			console.log('Message sent ' + newMessage.text);
 		});
 	} 
 
+function changeMessages(changeMessage, continueWith) {
+    put(appState.mainUrl, JSON.stringify(changeMessage), function () {
+        updateMessages();
+    });
+}
+function addAllMessages(message) {
+    if (messageList[message.id] == null) {
+       var item = createMessage(message);
+		var items = document.getElementsByClassName('MessagesPlace')[0];
+		messageList.push(message);
+		items.appendChild(item);
+    }
+}
 	function addMessage(message) {
+
 		if(!message){
 			return;
 		}
@@ -175,52 +242,26 @@
 	}
 	}
 
-	var theMessage = function(text, userName,id) {
-		return {
-			message:text,
-			user: userName,
-			id: id+1,
-		};
-	};
-	var uniqueId = function() {
-		var date = Date.now();
-		var random = Math.random() * Math.random();
-		return Math.floor(date * random).toString();
-	};
-	var messageList = [];
 
-	var appState = {
-		mainUrl : 'http://localhost:999/chat',
-		history:[],
-		token : 'TN11EN'
-	};
 
-	function getAllMessages (continueWith) {
-		var url = appState.mainUrl + '?token=' + appState.token;
-		get(url, function(responseText) {
-		var response = JSON.parse(responseText);
 
-        createAllMessages(response.messages);
-
-        continueWith && continueWith();
-    });
-		
-	}
 
 function updateMessages(continueWith) {
     var url = appState.mainUrl + '?token=' + appState.token;
         get(url, function (responseText) {
         var response = JSON.parse(responseText).messages;
         for (var i = 0; i < response.length; i++) {
-         var message = response[i];
-         if (message.requst == "DELETE") {
-      
-             }
-
-	      else if (messageList[message.id] == null) {
-	             addMessage(message);
-	         }
-                   }
+            var message = response[i];
+            if (message.requst == "POST") {
+                addAllMessages(message);
+            }
+            if (message.requst == "PUT") {
+                addChangeMessage(message);
+            }
+            if (message.requst == "DELETE") {
+                addDeleteMessage(message);
+            }
+        }
         continueWith && continueWith();
     });
     setTimeout(updateMessages, 1000);
@@ -228,6 +269,14 @@ function updateMessages(continueWith) {
 }
 
 
+
+function addChangeMessage(message) {
+    if (messageList[message.id] != null) {
+        var select = document.getElementsByClassName("onlyMessage")[message.id];
+        select.text = message.user + " : " + message.message;
+        messageList[message.id] = message;
+    }
+}
 
 
 function get(url, continueWith, continueWithError) {
