@@ -273,7 +273,7 @@ function updateMessages(continueWith) {
 function addChangeMessage(message) {
     if (messageList[message.id] != null) {
         var select = document.getElementsByClassName("onlyMessage")[message.id];
-        select.text = message.user + " : " + message.message;
+        select.innerHTML = message.message;
         messageList[message.id] = message;
     }
 }
