@@ -74,7 +74,7 @@
 		if(!messages.length)return;
 		var element  = messages[messages.length-1];
 		deleteMessageFromServer(messages.length-1,function () {});
-		element.parentNode.removeChild(element);
+		element.innerHTML="deleted"
 		for(var i=messageList.length-1;i>=0;i--){
 			if(messageList[i].id!=element.attributes['data'].value)
 				continue;
@@ -259,7 +259,7 @@ function updateMessages(continueWith) {
                 addChangeMessage(message);
             }
             if (message.requst == "DELETE") {
-                addDeleteMessage(message);
+                //addDeleteMessage(message);
             }
         }
         continueWith && continueWith();
