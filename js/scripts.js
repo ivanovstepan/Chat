@@ -41,7 +41,6 @@
 		}
 		)
 		getAllMessages();
-		//обновляется все сообщения
 		updateMessages();		
 	}
 
@@ -62,26 +61,16 @@
 			addMessage(messageList[i]);
 		
 	}
-	/*function addLastName(message){
-		name=message.user;
-		addName(name);
-		document.getElementById("NameText").setAttribute('disabled',false);
-	}*/
-
-
+	
 	function deleteLastMessage(){
 		var messages = document.getElementsByClassName('SeeOneMessage');	
 		if(!messages.length)return;
 		var element  = messages[messages.length-1];
+		//if(element.name==name){
 		deleteMessageFromServer(messages.length-1,function () {});
-		element.innerHTML="deleted"
-		for(var i=messageList.length-1;i>=0;i--){
-			if(messageList[i].id!=element.attributes['data'].value)
-				continue;
-			messageList[i].deleteMessage=true;
-		}
+		element.innerHTML=name+" : message has been deleted"
 		
-
+}	
 	}
 
 	function deleteMessageFromServer(index,continueWith) {
@@ -93,25 +82,6 @@
 }
 
 	function editLastMessage(){
-		/*
-var sendText = document.getElementById('sendText');
-
-        if (sendText.value != "") {
-            var name = document.getElementById('name');
-            var surname = document.getElementById('surname');
-
-            var index = document.getElementById("allMessages").selectedIndex;
-            var select = document.getElementById("allMessages")[index];
-            
-            var changeMessage = messageOption(sendText.value + "  " + changeIconUtfCode, surname.value + " " + name.value, index);
-            changeMessages(changeMessage, function () {
-            
-            });
-           
-            select.selected = false;
-            sendText.value = null;
-            document.getElementById("allMessages").scrollTop = document.getElementById("allMessages").scrollHeight;
-		*/
 		change=1;
 		var messages = document.getElementsByClassName('SeeOneMessage');
 		if(!messages.length)return;
