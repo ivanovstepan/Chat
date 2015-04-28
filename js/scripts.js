@@ -1,5 +1,6 @@
 	var name;
 	var change =0;
+	var indexForChange;
 		var theMessage = function(text, userName,id) {
 		return {
 			message:text,
@@ -43,17 +44,18 @@
 		getAllMessages();
 		updateMessages();		
 	}
-
 		function getAllMessages (continueWith) {
 		var url = appState.mainUrl + '?token=' + appState.token;
 		get(url, function(responseText) {
+			checkConnect();
 		var response = JSON.parse(responseText);
 
         createAllMessages(response.messages);
 
         continueWith && continueWith();
+    }, function(){
+    	document.getElementById('connection').className="btn offline";
     });
-		
 	}
 
 	function createAllMessages(messageList) {
@@ -63,14 +65,18 @@
 	}
 	
 	function deleteLastMessage(){
-		var messages = document.getElementsByClassName('SeeOneMessage');	
+		var messages = document.getElementsByClassName('SeeOneMessage');
+		var names = document.getElementsByClassName('nameOfUser');
 		if(!messages.length)return;
-		var element  = messages[messages.length-1];
-		//if(element.name==name){
-		deleteMessageFromServer(messages.length-1,function () {});
-		element.innerHTML=name+" : message has been deleted"
-		
-}	
+		for (var i=messages.length-1;i>0;i--){
+			var element  = messages[i];
+			 
+			if(names[i].innerHTML==name+" : " && messages[i].getElementsByClassName("onlyMessage")[0].innerHTML!=" message has been deleted"){
+				deleteMessageFromServer(i,function () {});
+		        messages[i].innerHTML='<span class ="nameOfUser">' + name + ' : </span><span class="onlyMessage"> message has been deleted</span>'
+		        break;
+			}
+		}
 	}
 
 	function deleteMessageFromServer(index,continueWith) {
@@ -82,11 +88,21 @@
 }
 
 	function editLastMessage(){
+
 		change=1;
 		var messages = document.getElementsByClassName('SeeOneMessage');
+		var names = document.getElementsByClassName('nameOfUser');
 		if(!messages.length)return;
-		var element  =  messages[messages.length-1];
-		document.getElementById("MessageText").value= element.lastChild.innerHTML;
+		for (var i=messages.length-1;i>0;i--){
+			var element  = messages[i];
+			if(names[i].innerHTML==name+" : " && messages[i].getElementsByClassName("onlyMessage")[0].innerHTML!=" message has been deleted" ){
+				document.getElementById("MessageText").value= element.lastChild.innerHTML;		
+				indexForChange=i; 
+				break;     
+			}
+		}
+
+		
 
 	}
 
@@ -149,7 +165,7 @@
 
 	function onAddButtonClick(){
 		var MessageText = document.getElementById('MessageText');
-		var newMessage = theMessage(MessageText.value,name,messageList.length-1);
+		var newMessage = theMessage(MessageText.value,name,indexForChange);
 		if(MessageText.value == '')
 			return;
 		MessageText.value = '';
@@ -188,7 +204,7 @@ function addAllMessages(message) {
 	}
 	function createMessage(text){
 		var divItem = document.createElement('div');
-		var htmlAsText = '<div class="SeeOneMessage" ><span> name : </span><span class="onlyMessage">text</span></div>';
+		var htmlAsText = '<div class="SeeOneMessage" ><span class ="nameOfUser"> name : </span><span class="onlyMessage">text</span></div>';
 		divItem.innerHTML= htmlAsText;
 		updateItem(divItem.firstChild, text);
 		return divItem.firstChild;
@@ -200,26 +216,15 @@ function addAllMessages(message) {
 		divItem.firstChild.innerHTML=task.user +' : ' ;
 	} 
 
-	function checkConnect() {
-	   var some
-	   if(some){
-	   	var connected = document.getElementById('connect')
-	   connect.setAttribute('action','active');
+	function checkConnect(evtObj) {
+	 document.getElementById('connection').className="btn online";
 	}
-	   else{
-	   	var connected = document.getElementById('connect')
-	   connect.setAttribute('action','active');
-	}
-	}
-
-
-
-
-
+	
 function updateMessages(continueWith) {
     var url = appState.mainUrl + '?token=' + appState.token;
-        get(url, function (responseText) {
+    get(url, function (responseText) {
         var response = JSON.parse(responseText).messages;
+        checkConnect();
         for (var i = 0; i < response.length; i++) {
             var message = response[i];
             if (message.requst == "POST") {
@@ -233,6 +238,8 @@ function updateMessages(continueWith) {
             }
         }
         continueWith && continueWith();
+    }, function(){
+    	document.getElementById('connection').className="btn offline";
     });
     setTimeout(updateMessages, 1000);
 

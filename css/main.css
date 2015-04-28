@@ -14,6 +14,16 @@
 #user{
 	margin-top:15px;
 }
-#connect {
-	color: red;
+
+
+.online {
+	background-color: #2e8a19;
+  	border-color: #2b8118;
+  	height: 26px;
+}
+
+.offline {
+	height: 26px;
+	background-color: #d9534f;
+  	border-color: #d43f3a;
 }
