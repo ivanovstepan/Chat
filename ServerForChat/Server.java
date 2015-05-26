@@ -16,11 +16,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Server implements HttpHandler {
-    private List<Message> history = new ArrayList<Message>();
+    private List<InfoMessage> history = new ArrayList<InfoMessage>();
     private MessageExchange messageExchange = new MessageExchange();
     private int currentId = 0;
     private Lock lock = new ReentrantLock();
-
+    
     public static void main(String[] args) {
         if (args.length != 1)
             System.out.println("Usage: java Server port");
@@ -52,13 +52,13 @@ public class Server implements HttpHandler {
         } else if ("POST".equals(httpExchange.getRequestMethod())) {
             doPost(httpExchange);
         } else if ("DELETE".equals(httpExchange.getRequestMethod())) {
-            doDelete(httpExchange);
+        	doDelete(httpExchange);
         } else if ("PUT".equals(httpExchange.getRequestMethod())) {
-            doPut(httpExchange);
+        	doPut(httpExchange);
         }else if ("OPTIONS".equals(httpExchange.getRequestMethod())) {
             response = "";
         }
-        else {
+          else {
             response = "Unsupported http method: " + httpExchange.getRequestMethod();
         }
 
@@ -82,15 +82,15 @@ public class Server implements HttpHandler {
 
     private void doPost(HttpExchange httpExchange) {
         try {
-            Message message = messageExchange.getClientMessage(httpExchange.getRequestBody());
-
+            InfoMessage message = messageExchange.getClientMessage(httpExchange.getRequestBody());
+            
             lock.lock();
             try {
-                message.setID(currentId++);
+            	message.setID(currentId++);
             } finally {
-                lock.unlock();
+            	lock.unlock();
             }
-
+            
             message.setRequst("POST");
             history.add(message);
             System.out.println("Get Message from " + message);
@@ -98,40 +98,40 @@ public class Server implements HttpHandler {
             System.err.println("Invalid user message: " + httpExchange.getRequestBody() + " " + e.getMessage());
         }
     }
-    private void doDelete(HttpExchange httpExchange) {
-        String query = httpExchange.getRequestURI().getQuery();
-        if(query != null) {
-            Map<String, String> map = queryToMap(query);
-            String token = map.get("token");
-            int index = -1;
-            if (token != null && !"".equals(token)) {
-                index = messageExchange.getIndex(token);
-            }
-            if(index != -1) {
-                Message message = history.get(index);
-                message.setRequst("DELETE");
-                String messageForDelete = message.getText();
-               // message.deleteMessage();
-                System.out.println("Delete Message : " + message.getNameUser() + " : " + messageForDelete);
-            }
-        }
+    private void doDelete(HttpExchange httpExchange) { 	
+    	String query = httpExchange.getRequestURI().getQuery();
+    	if(query != null) {
+    		 Map<String, String> map = queryToMap(query);
+    		 String token = map.get("token");
+    		 int index = -1;
+    		 if (token != null && !"".equals(token)) {
+                  index = messageExchange.getIndex(token);
+    		 }
+    		 if(index != -1) {
+    		 InfoMessage message = history.get(index);
+    		 message.setRequst("DELETE");
+    		 String messageForDelete = message.getText();
+    		 message.deleteMessage();
+    		 System.out.println("Delete Message : " + message.getNameUser() + " : " + messageForDelete);
+    		 }
+    	}    		 
     }
     private void doPut(HttpExchange httpExchange) {
-        try {
-            Message messageChange = messageExchange.getClientMessage(httpExchange.getRequestBody());
-            int idOfChangeMessage =  messageChange.getID();
-            if(idOfChangeMessage >= 0 && idOfChangeMessage < history.size()) {
-                if(messageChange.isDelete() == false) {
-                    Message message = history.get(idOfChangeMessage);
-                    message.setText(messageChange.getText());
-                    message.setChange(true);
-                    message.setRequst("PUT");
-                    System.out.println("Chnage :"+ message.toJSONString());
-                }
-            }
+    try {
+    	InfoMessage messageChange = messageExchange.getClientMessage(httpExchange.getRequestBody());
+    	int idOfChangeMessage =  messageChange.getID();
+    	if(idOfChangeMessage >= 0 && idOfChangeMessage < history.size()) {
+    	   if(messageChange.isDelete() == false) {
+    		InfoMessage infoMessage = history.get(idOfChangeMessage);
+    		infoMessage.setText(messageChange.getText());    		
+    		infoMessage.setChange(true);
+    		infoMessage.setRequst("PUT");
+    		System.out.println("Chnage :"+infoMessage.toJSONString());
+    	    }
+    	   }
         } catch (ParseException e) {
-            System.err.println("Invalid user message: " + httpExchange.getRequestBody() + " " + e.getMessage());
-        }
+          System.err.println("Invalid user message: " + httpExchange.getRequestBody() + " " + e.getMessage());
+        }	
     }
     private void sendResponse(HttpExchange httpExchange, String response) {
         try {

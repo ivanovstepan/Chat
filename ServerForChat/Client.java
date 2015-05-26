@@ -5,6 +5,7 @@ import org.json.simple.parser.ParseException;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -12,12 +13,12 @@ import java.util.Random;
 
 public class Client implements Runnable {
 
-    private List<Message> history = new ArrayList<Message>();
+    private List<InfoMessage> history = new ArrayList<InfoMessage>();
     private MessageExchange messageExchange = new MessageExchange();
     private String host;
     private Integer port;
     private String userName = "User" + (new Random()).nextInt(100);
-
+    
     public Client(String host, Integer port) {
         this.host = host;
         this.port = port;
@@ -43,8 +44,8 @@ public class Client implements Runnable {
         return (HttpURLConnection) url.openConnection();
     }
 
-    public List<Message> getMessages() {
-        List<Message> list = new ArrayList<Message>();
+    public List<InfoMessage> getMessages() {
+        List<InfoMessage> list = new ArrayList<InfoMessage>();
         HttpURLConnection connection = null;
         try {
             connection = getHttpURLConnection();
@@ -53,7 +54,7 @@ public class Client implements Runnable {
             JSONObject jsonObject = messageExchange.getJSONObject(response);
             JSONArray jsonArray = (JSONArray) jsonObject.get("messages");
             for (Object o : jsonArray) {
-                Message info = Message.parseInfoMessage((JSONObject) o);
+            	InfoMessage info = InfoMessage.parseInfoMessage((JSONObject)o);
                 System.out.println(info.toString());
                 list.add(info);
             }
@@ -70,12 +71,14 @@ public class Client implements Runnable {
         return list;
     }
 
-    public void sendMessage(Message message) {
+    public void sendMessage(InfoMessage message) {
         HttpURLConnection connection = null;
         try {
             connection = getHttpURLConnection();
             connection.setDoOutput(true);
+
             connection.setRequestMethod("POST");
+
             DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
 
             byte[] bytes = messageExchange.getClientSendMessageRequest(message).getBytes();
@@ -96,11 +99,13 @@ public class Client implements Runnable {
 
     public void listen() {
         while (true) {
-            List<Message> list = getMessages();
+            List<InfoMessage> list = getMessages();
 
             if (list.size() > 0) {
                 history.addAll(list);
             }
+
+
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -114,7 +119,7 @@ public class Client implements Runnable {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            Message message = new Message(scanner.nextLine(),userName);
+            InfoMessage message = new InfoMessage(scanner.nextLine(),userName);
             sendMessage(message);
         }
     }

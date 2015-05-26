@@ -3,7 +3,10 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.sound.midi.MidiDevice.Info;
 
 public class MessageExchange {
 
@@ -18,21 +21,21 @@ public class MessageExchange {
         return (Integer.valueOf(token.substring(2, token.length() - 2)) - 11) / 8;
     }
 
-    public String getServerResponse(List<Message> messages) {
+    public String getServerResponse(List<InfoMessage> messages) {
         JSONObject jsonObject = new JSONObject();
-
+        
         jsonObject.put("messages", messages);
-        jsonObject.put("token", getToken(messages.size()));
+        jsonObject.put("token", getToken(messages.size()));       
         return jsonObject.toJSONString();
     }
 
-    public String getClientSendMessageRequest(Message message) {
+    public String getClientSendMessageRequest(InfoMessage message) {
         return message.toJSONString();
     }
 
-    public Message getClientMessage(InputStream inputStream) throws ParseException {
+    public InfoMessage getClientMessage(InputStream inputStream) throws ParseException {
         JSONObject json = getJSONObject(inputStreamToString(inputStream));
-        return Message.parseInfoMessage((JSONObject) json);
+    	return InfoMessage.parseInfoMessage((JSONObject) json); 
     }
 
     public JSONObject getJSONObject(String json) throws ParseException {
